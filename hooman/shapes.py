@@ -35,7 +35,7 @@ def alpha_ellipse(hapi, x, y, w, h):
     # https://stackoverflow.com/questions/59293057/how-to-make-transparent-pygame-draw-circle/
     surface1 = hapi.screen.convert_alpha()
     # surface1.fill([0,0,0,0])
-    shape_fill = hapi._fill + (hapi._alpha,)
+    shape_fill = hapi._fill[0] + (hapi._alpha,)
     pygame.draw.ellipse(surface1, shape_fill, (x, y, w, h))
     hapi.screen.blit(surface1, (0, 0))
 
@@ -46,7 +46,7 @@ def curve_rect(hapi, x, y, width, height, curve, rotation):
     curve *= min(width, height)
     curve = int(curve)
 
-    shape_fill = hapi._fill + (hapi._alpha,)
+    shape_fill = hapi._fill[0] + (hapi._alpha,)
     """
     surf = pygame.Surface((width, height), pygame.SRCALPHA)
     pygame.draw.rect(surf, shape_fill, (0, curve, width, height - 2 * curve))
@@ -57,6 +57,11 @@ def curve_rect(hapi, x, y, width, height, curve, rotation):
     pygame.draw.circle(surf, shape_fill, (width - curve, height - curve), curve)
     hapi.screen.blit(surf,(x,y))
     """
+    if rotation == 0:
+        pygame.draw.rect(
+            hapi.screen, shape_fill, (x, y + curve, width, height), border_radius=curve
+        )
+        return
     hapi.rect(x + curve, y, width - curve * 2, height)
     hapi.rect(x, y + curve, width, height - curve * 2)
     top_left = pygame.Vector2(-width // 2 + curve, -height // 2 + curve).rotate(
@@ -69,6 +74,7 @@ def curve_rect(hapi, x, y, width, height, curve, rotation):
     bot_left = pygame.Vector2(-width // 2 + curve, height // 2 - curve).rotate(rotation)
     midx = x + width // 2
     midy = y + height // 2
+
     pygame.draw.circle(
         hapi.screen,
         shape_fill,

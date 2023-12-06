@@ -149,6 +149,12 @@ class Base_Widget:
         if hasattr(self, "text"):
             return "%s: %s" % (self.__class__.__name__, self.text)
         return "%s at (%d, %d)" % (self.__class__.__name__, self.x, self.y)
+    
+    def Move(self, x=None, y=None):
+        if x is not None:
+            self.x = x
+        if y is not None:
+            self.y = y
 
 
 # this creates a curved rect, given a w,h and the curve amount, bewtween 0 and 1
@@ -785,7 +791,7 @@ class slider_with_text:
         if "top" in self.pivot:
             y = self.y - obj.get_height()
         y = self.y
-        self.surface.blit(obj, (x, y))
+        self.slider.surface.blit(obj, (x, y))
 
     def _get_text_height(self):
         return self.font.render(" ", True, (0, 0, 0)).get_height()
@@ -815,7 +821,6 @@ class Scroll:
         self.y_slider = None
         if options["range_x"] > 0:
             self.x_slider = Slider(
-                hapi,
                 0,
                 self.h - 20,
                 self.w - 20,
@@ -825,12 +830,10 @@ class Scroll:
                     "range": [0, options["range_x"]],
                     "slider_color": options["slider_color"],
                     "background_color": options["bar_color"],
-                    "resize_slider": True,
                 },
             )
         if options["range_y"] > 0:
             self.y_slider = Slider(
-                hapi,
                 self.w - 20,
                 0,
                 20,
@@ -841,7 +844,6 @@ class Scroll:
                     "slider_color": options["slider_color"],
                     "background_color": options["bar_color"],
                     "direction": "vertical",
-                    "resize_slider": True,
                 },
             )
 

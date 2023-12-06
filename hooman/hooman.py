@@ -166,6 +166,7 @@ class Hooman:
         self._previous_mouse = []
 
         self._frame_count = 0
+        self._fps = 60
 
         self._has_cursor = False
 
@@ -201,9 +202,11 @@ class Hooman:
         param_types = {
             "w": [int, []],
             "h": [int, []],
+            "start_col": [[list, tuple], []],
+            "end_col": [[list, tuple], []],
             "direction": [int, []],
         }
-        verify_color([start_col, end_col])
+        # verify_color([start_col, end_col])
         verify_func_param(self.gradient, param_types, locals())
         return self._gradient(
             w, h, check_color(start_col).value, check_color(end_col).value, direction
@@ -212,7 +215,7 @@ class Hooman:
     def set_background(self, col):
         """this calls hapi.background every frame with the given color"""
 
-        verify_color([col])
+        # verify_color([col])
         self.bg_col = check_color(col).value
 
     def stroke_size(self, weight):
@@ -381,7 +384,8 @@ class Hooman:
     def end_shape(self, fill=1):
         if fill:
             pygame.draw.polygon(self.screen, self._fill, self._polygon_coords)
-            svg_fill = f"rgb({self._fill[0]},{self._fill[1]},{self._fill[2]})"
+            f = self._fill[0]
+            svg_fill = f"rgb({f[0]},{f[1]},{f[2]})"
         else:
             pygame.draw.polygon(
                 self.screen, self._fill, self._polygon_coords, self._stroke_weight
@@ -558,7 +562,7 @@ class Hooman:
     # pygame
     #
 
-    def flip_display(self, update_ui=True):
+    def flip_display(self, update_ui=False):
         """updates the screen. This should be called once every frame"""
 
         self._frame_count += 1
@@ -588,6 +592,7 @@ class Hooman:
         """Get all new events. This should be called once every frame"""
         if len(self._timers) > 0:
             self._timer_update()
+        self.clock.tick(self._fps)
         self.mouse_test_x = self.mouseX()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -665,6 +670,12 @@ class Hooman:
     def second(self) -> int:
         now = datetime.datetime.now()
         return now.second
+
+    def get_fps(self) -> int:
+        return self.clock.get_fps()
+    
+    def set_fps(self, fps):
+        self._fps = fps
 
     #
     # charts
